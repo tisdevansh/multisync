@@ -134,8 +134,8 @@ class Calibrator:
     cancellation learns the chirps within ~4 s), then fits latency and drift per output.
 
     Cheap Bluetooth speakers run their DAC clock slightly off (we measured -800 / +400 ppm on
-    real speakers), so their latency changes linearly over time. The fitted drift is applied
-    continuously by the engine so the speakers stay together long after calibration.
+    real speakers), so their latency changes linearly over time. The fitted drift is shown but
+    only applied when config "track_drift" is on: it is mostly a transient of the warm-up.
     """
 
     def __init__(self, engine, mic_device=None, rounds=4, progress=None, warmup_s=WARMUP_S):

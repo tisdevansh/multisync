@@ -1,17 +1,17 @@
 # Graph Report - Multi-bluetooth  (2026-11-22)
 
 ## Corpus Check
-- 18 files · ~11,550 words
+- 18 files · ~11,605 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .ico 1)
 
 ## Summary
-- 325 nodes · 697 edges · 13 communities (8 shown, 5 thin omitted)
-- Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 61 edges (avg confidence: 0.87)
+- 325 nodes · 689 edges · 13 communities (8 shown, 5 thin omitted)
+- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 53 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3f4b5094`
+- Built from commit: `7bbd4fe8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -30,22 +30,22 @@
 - ClockEstimator
 
 ## God Nodes (most connected - your core abstractions)
-1. `Engine` - 37 edges
-2. `App` - 35 edges
-3. `FilePlayerSource` - 20 edges
-4. `Timeline` - 19 edges
-5. `Config` - 15 edges
-6. `LocalOutput` - 14 edges
-7. `now_us()` - 14 edges
-8. `CalibrationSource` - 13 edges
-9. `LoopbackSource` - 13 edges
-10. `SyncReader` - 13 edges
+1. `App` - 35 edges
+2. `Engine` - 30 edges
+3. `FilePlayerSource` - 19 edges
+4. `Timeline` - 18 edges
+5. `Config` - 14 edges
+6. `now_us()` - 14 edges
+7. `SyncReader` - 13 edges
+8. `LocalOutput` - 13 edges
+9. `LoopbackSource` - 12 edges
+10. `CalibrationSource` - 12 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `25 Hz keep-alive vs BT silence handling` --implemented_by--> `LocalOutput`  [EXTRACTED]
-  README.md → desktop/multisync/outputs.py
 - `Master timeline scheduled ahead` --implemented_by--> `Timeline`  [EXTRACTED]
   README.md → desktop/multisync/timeline.py
+- `25 Hz keep-alive vs BT silence handling` --implemented_by--> `LocalOutput`  [EXTRACTED]
+  README.md → desktop/multisync/outputs.py
 - `Rate-nudge drift correction` --implemented_by--> `SyncReader`  [EXTRACTED]
   README.md → desktop/multisync/timeline.py
 - `Mic auto-calibration (chirps, drift fit)` --implemented_by--> `Calibrator`  [EXTRACTED]
@@ -67,8 +67,8 @@ Cohesion: 0.07
 Nodes (15): Config, config_dir(), local_ips(), pack(), pack_audio(), pack_json(), recv_exact(), recv_msg() (+7 more)
 
 ### Community 3 - "Engine"
-Cohesion: 0.08
-Nodes (4): Engine, HubServer, test_engine_drift_is_bounded_and_lead_follows(), test_engine_drift_keeps_group_minimum_at_zero()
+Cohesion: 0.10
+Nodes (3): Engine, test_engine_drift_is_bounded_and_lead_follows(), test_engine_drift_keeps_group_minimum_at_zero()
 
 ### Community 5 - "app.py"
 Cohesion: 0.08
@@ -91,24 +91,24 @@ Cohesion: 0.09
 Nodes (5): InputDeviceSource, LiveWriter, LoopbackSource, Source, to_stereo()
 
 ## Knowledge Gaps
-- **3 isolated node(s):** `Python deps: numpy, sounddevice, soundcard, soundfile, soxr, customtkinter`, `Windows exe version resource`, `Rate-nudge drift correction`
+- **3 isolated node(s):** `Rate-nudge drift correction`, `Windows exe version resource`, `Python deps: numpy, sounddevice, soundcard, soundfile, soxr, customtkinter`
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 106 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Engine` connect `Engine` to `App`, `protocol.py`, `app.py`, `sources.py`, `FilePlayerSource`, `test_core.py`, `LoopbackSource`?**
-  _High betweenness centrality (0.243) - this node is a cross-community bridge._
-- **Are the 8 inferred relationships involving `Engine` (e.g. with `App` and `Config`) actually correct?**
-  _`Engine` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `Python deps: numpy, sounddevice, soundcard, soundfile, soxr, customtkinter`, `Windows exe version resource`, `Rate-nudge drift correction` to the rest of the system?**
+- **Why does `Engine` connect `Engine` to `App`, `protocol.py`, `app.py`, `sources.py`, `FilePlayerSource`, `test_core.py`?**
+  _High betweenness centrality (0.169) - this node is a cross-community bridge._
+- **Are the 3 inferred relationships involving `App` (e.g. with `Engine` and `InputDeviceSource`) actually correct?**
+  _`App` has 3 INFERRED edges - model-reasoned connections that need verification._
+- **What connects `Rate-nudge drift correction`, `Windows exe version resource`, `Python deps: numpy, sounddevice, soundcard, soundfile, soxr, customtkinter` to the rest of the system?**
   _3 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App` be split into smaller, more focused modules?**
   _Cohesion score 0.11932773109243698 - nodes in this community are weakly interconnected._
 - **Why does `App` connect `App` to `Engine`, `app.py`, `LoopbackSource`?**
-  _High betweenness centrality (0.129) - this node is a cross-community bridge._
-- **Are the 3 inferred relationships involving `App` (e.g. with `Engine` and `InputDeviceSource`) actually correct?**
-  _`App` has 3 INFERRED edges - model-reasoned connections that need verification._
+  _High betweenness centrality (0.130) - this node is a cross-community bridge._
 - **Should `protocol.py` be split into smaller, more focused modules?**
   _Cohesion score 0.07164404223227752 - nodes in this community are weakly interconnected._
+- **Why does `FilePlayerSource` connect `FilePlayerSource` to `sources.py`, `protocol.py`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._

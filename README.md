@@ -12,7 +12,7 @@ Play one source on many Bluetooth speakers connected to a Windows laptop, in syn
 ## How the sync works
 1. One master timeline, scheduled ~400 ms ahead; every output reads the sample due at the moment its buffer reaches the speaker.
 2. Each output tracks its target with a ≤0.3 % rate nudge (inaudible) or a jump for big errors, with per-device resampling (e.g. 48 → 44.1 kHz).
-3. Calibration plays distinct chirps per speaker (fresh mic stream per burst to defeat laptop echo cancellation), then fits latency + drift and compensates continuously.
+3. Calibration plays distinct chirps per speaker (fresh mic stream per burst to defeat laptop echo cancellation), then fits latency + drift and applies the measured offsets (drift tracking is off by default; set `"track_drift": true` in config.json to enable).
 4. A 25 Hz keep-alive at −48 dBFS stops Bluetooth speakers from treating silence specially, which shifts their latency.
 
 ## Measured (iBall Musi Rock + Stone Spinx Pro)

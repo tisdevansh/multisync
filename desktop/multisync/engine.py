@@ -63,7 +63,10 @@ class Engine:
             dt, last = now - last, now
             if self.drift_paused:
                 continue
-            self.apply_drift(dt)
+            # Off by default: the slope fitted during the ~2 min calibration is mostly a transient
+            # (speakers that sounded in sync were pushed apart by ~0.3 ms/s), so the offsets stay fixed.
+            if self.config.get("track_drift", False):
+                self.apply_drift(dt)
             self.ensure_lead()
 
     def apply_drift(self, dt):
