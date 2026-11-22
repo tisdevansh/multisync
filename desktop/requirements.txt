@@ -1,0 +1,6 @@
+numpy>=2.0
+sounddevice>=0.5
+soundcard>=0.4.4
+soundfile>=0.13
+soxr>=0.5
+customtkinter>=5.2

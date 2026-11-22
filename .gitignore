@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+desktop/build/
+desktop/dist/
+desktop/*.spec
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+*.iml
+.kotlin/
+
+# Secrets: release signing key (back it up privately — updates must be signed with the same key)
+android/keystore/*.jks
+android/keystore/keystore.properties
+
+# Release binaries are attached to GitHub Releases, not committed
+release/
+
+# graphify cache (graph outputs are committed)
+graphify-out/cache/
+
+# Android app is kept locally, not published
+android/
