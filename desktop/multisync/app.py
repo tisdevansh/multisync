@@ -152,8 +152,8 @@ class App(ctk.CTk):
         super().__init__(fg_color=BG)
         self.engine = engine
         self.title(f"{APP_NAME} Hub")
-        self.geometry("1180x760")
-        self.minsize(1000, 660)
+        self.geometry("1120x680")
+        self.minsize(960, 600)
         try:
             self.iconbitmap(resource("icon.ico"))
         except Exception:
@@ -336,11 +336,11 @@ class App(ctk.CTk):
         row = ctk.CTkFrame(card, fg_color="transparent")
         row.pack(fill="x", padx=16, pady=(0, 6))
         ctk.CTkLabel(row, text="Master volume", text_color=TEXT, width=110, anchor="w").pack(side="left")
-        self.master = ctk.CTkSlider(row, from_=0, to=1, number_of_steps=100, progress_color=ACCENT,
+        self.master_vol = ctk.CTkSlider(row, from_=0, to=1, number_of_steps=100, progress_color=ACCENT,
                                     button_color=TEXT, button_hover_color=ACCENT,
                                     command=lambda v: setattr(self.engine, "master_volume", float(v)))
-        self.master.set(self.engine.master_volume)
-        self.master.pack(side="left", fill="x", expand=True)
+        self.master_vol.set(self.engine.master_volume)
+        self.master_vol.pack(side="left", fill="x", expand=True)
         row2 = ctk.CTkFrame(card, fg_color="transparent")
         row2.pack(fill="x", padx=16, pady=(0, 2))
         ctk.CTkLabel(row2, text="Buffer", text_color=TEXT, width=110, anchor="w").pack(side="left")
