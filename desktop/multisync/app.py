@@ -165,6 +165,7 @@ class App(ctk.CTk):
         self.mode = "Music"
         self._build()
         self.protocol("WM_DELETE_WINDOW", self._close)
+        self._sync_seg()
         self.after(150, self._tick)
         if engine.server.error:
             self.after(500, lambda: self.toast(engine.server.error + " — is MultiSync already running?", DANGER, 12000))

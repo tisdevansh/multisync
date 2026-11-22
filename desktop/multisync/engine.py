@@ -7,7 +7,7 @@ from . import protocol as P
 from .config import Config
 from .network import HubServer
 from .outputs import LocalOutput, list_output_devices
-from .sources import ClickSource, FilePlayerSource
+from .sources import ClickSource, FilePlayerSource, LoopbackSource
 from .timeline import Timeline
 
 MIN_LEAD_MS = 120
@@ -26,6 +26,11 @@ class Engine:
         self.player = FilePlayerSource(self)
         self.player.add_files(self.config.get("playlist", []))
         self.source = self.player
+        # Default to capturing browser/system audio when VB-Cable exists: Windows output is set to
+        # "CABLE Input" and every app's sound (YouTube, Spotify…) arrives here without echo.
+        cable = next((n for _, n, _ in list_output_devices() if n.startswith("CABLE Input")), None)
+        if cable and self.config.get("source", "system") == "system":
+            self.source = LoopbackSource(self, cable)
         self.solo_id = None  # during calibration only this output is audible
         self.drift_paused = False
         self.running = False
