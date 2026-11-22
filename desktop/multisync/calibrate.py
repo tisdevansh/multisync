@@ -223,6 +223,7 @@ class Calibrator:
                 if o.id in fits:
                     o.latency_ms = round(base_now[o.id] - ref, 2)
                     o.drift_ms_s = round(fits[o.id][2], 4)
+                    o.drift_acc_ms = 0.0
                     o.cal_group = True
                     r.update(latency_ms=o.latency_ms, drift_ms_s=o.drift_ms_s,
                              measured_ms=base_now[o.id])

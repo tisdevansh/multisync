@@ -11,6 +11,7 @@ from . import calibrate
 from .config import APP_NAME, APP_VERSION
 from .engine import Engine, MAX_LEAD_MS, MIN_LEAD_MS
 from .outputs import list_input_devices, list_output_devices
+from .realtime import boost_process
 from .sources import AUDIO_EXTENSIONS, InputDeviceSource, LoopbackSource
 
 # palette
@@ -555,6 +556,8 @@ class App(ctk.CTk):
         else:
             self.pill.configure(text="●  Hub offline", text_color=DANGER)
         self.lead_lbl.configure(text=f"{eng.lead_ms:.0f} ms")
+        if abs(self.lead.get() - eng.lead_ms) > 10:  # the engine raises it when a speaker needs more
+            self.lead.set(eng.lead_ms)
 
         p = eng.player
         self.track.configure(text=p.track_name or "Nothing playing")
@@ -616,6 +619,7 @@ def main():
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("MultiSync.Hub")
     except Exception:
         pass
+    boost_process()
     ctk.set_appearance_mode("dark")
     engine = Engine()
     engine.start()

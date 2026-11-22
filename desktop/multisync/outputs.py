@@ -1,13 +1,18 @@
 """Speakers connected to this PC (Bluetooth, USB, built-in), each locked to the timeline."""
 import re
+import threading
 import time
 
 import numpy as np
 
 from .protocol import now_us
+from .realtime import boost_audio_thread
 from .timeline import SyncReader
 
 KEEPALIVE_HZ = 25.0
+# Device buffer. "low" (~10 ms) underruns whenever another app or the UI holds the CPU/GIL for a
+# moment; sync is unaffected by a bigger buffer because the callback uses the DAC timestamp.
+OUTPUT_LATENCY_S = 0.1
 
 
 def list_output_devices():
@@ -39,6 +44,33 @@ def list_input_devices():
     return out
 
 
+def set_device_volume_max(name: str):
+    """Put the Windows volume of an output device at 100 % (and unmute it).
+
+    Windows keeps each speaker at whatever volume it had when it connected, and MultiSync's sliders
+    can only attenuate below that, so a speaker that joined at 30 % stayed quiet. With the device at
+    100 % the app's master/per-speaker sliders control the real loudness. Runs in its own thread
+    because COM must be initialised per thread.
+    """
+    def work():
+        try:
+            import comtypes
+            from pycaw.pycaw import AudioUtilities
+
+            comtypes.CoInitialize()
+            try:
+                for d in AudioUtilities.GetAllDevices():
+                    if d.FriendlyName == name and d.EndpointVolume is not None:
+                        d.EndpointVolume.SetMute(0, None)
+                        d.EndpointVolume.SetMasterVolumeLevelScalar(1.0, None)
+            finally:
+                comtypes.CoUninitialize()
+        except Exception:
+            pass  # pycaw missing or device gone: the app's own volume still works
+
+    threading.Thread(target=work, name="device-volume", daemon=True).start()
+
+
 def looks_bluetooth(name: str) -> bool:
     return bool(re.search(r"(Stereo\)|Hands-Free|Bluetooth|A2DP|AirPods|Buds|Pods)", name, re.I))
 
@@ -57,6 +89,7 @@ class LocalOutput:
         self.muted = False
         self.enabled = False
         self.drift_ms_s = 0.0  # measured clock drift of this speaker (ms of latency per second)
+        self.drift_acc_ms = 0.0  # drift applied since calibration / stream start (bounded)
         self.cal_group = False  # offsets set by auto-calibration (drift tracked together)
         self.stream = None
         self.reader = None
@@ -76,12 +109,17 @@ class LocalOutput:
         self.error = None
         self.reader = SyncReader(self.engine.timeline, self.rate)
         self._ka_phase = 0.0
+        # A new stream re-primes the speaker's buffer: drift built up on the old stream is gone.
+        self.latency_ms -= self.drift_acc_ms
+        self.drift_acc_ms = 0.0
         try:
             self.stream = sd.OutputStream(device=self.index, samplerate=self.rate, channels=2,
-                                          dtype="float32", latency="low", callback=self._callback)
+                                          dtype="float32", latency=OUTPUT_LATENCY_S, callback=self._callback)
             self.stream.start()
             self.started_at = time.monotonic()
             self.enabled = True
+            if self.engine.config.get("max_device_volume", True):
+                set_device_volume_max(self.name)
         except Exception as e:
             self.stream = None
             self.enabled = False
@@ -101,7 +139,12 @@ class LocalOutput:
                 pass
         self.level = 0.0
 
+    def output_delay_ms(self):
+        s = self.stream
+        return (s.latency * 1000.0) if s is not None else OUTPUT_LATENCY_S * 1000.0
+
     def _callback(self, outdata, frames, t, status):
+        boost_audio_thread()
         if status:
             self.xruns += 1
         now = now_us()

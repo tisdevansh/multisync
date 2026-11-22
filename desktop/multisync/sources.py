@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 from .protocol import CHANNELS, SAMPLE_RATE, now_us
+from .realtime import boost_audio_thread
 
 AUDIO_EXTENSIONS = (".mp3", ".wav", ".flac", ".ogg", ".oga", ".opus", ".aif", ".aiff")
 
@@ -448,7 +449,9 @@ class LoopbackSource(Source):
 
         warnings.filterwarnings("ignore", category=sc.SoundcardRuntimeWarning)
         mic = sc.get_microphone(self.speaker_name, include_loopback=True)
-        with mic.recorder(samplerate=SAMPLE_RATE, channels=2, blocksize=480) as rec:
+        # blocksize is the WASAPI buffer length: 10 ms dropped audio on any hiccup, 200 ms doesn't
+        boost_audio_thread()
+        with mic.recorder(samplerate=SAMPLE_RATE, channels=2, blocksize=SAMPLE_RATE // 5) as rec:
             while self.running:
                 data = rec.record(numframes=480)
                 if len(data):

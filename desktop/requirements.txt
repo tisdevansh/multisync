@@ -4,3 +4,4 @@ soundcard>=0.4.4
 soundfile>=0.13
 soxr>=0.5
 customtkinter>=5.2
+pycaw>=20240316

@@ -232,3 +232,28 @@ def test_engine_drift_keeps_group_minimum_at_zero(tmp_path):
     # relative offset grows by (0.65 + 0.4) ms/s, and the earliest speaker stays at 0
     assert abs((b.latency_ms - a.latency_ms) - (30.0 + 1.05 * 60)) < 1e-6
     assert a.latency_ms == 0.0
+
+
+def test_engine_drift_is_bounded_and_lead_follows(tmp_path):
+    from multisync.config import Config
+    from multisync.engine import MAX_DRIFT_MS, Engine
+
+    eng = Engine(Config(str(tmp_path / "c.json")), port=1)
+    eng.lead_ms = 200.0
+    eng.source.resync = lambda: None
+
+    class O:
+        kind = "remote"
+
+        def __init__(self, oid, lat, drift):
+            self.id, self.latency_ms, self.drift_ms_s, self.cal_group = oid, lat, drift, True
+
+    # the real config that went silent: iBall 155 ms / -0.14 ms/s, Stone 0 ms / -0.45 ms/s
+    a, b = O("ibal", 155.0, -0.1378), O("stone", 0.0, -0.4516)
+    eng.all_outputs = lambda: [a, b]
+    for _ in range(36000):  # one hour
+        eng.apply_drift(0.1)
+        eng.ensure_lead()
+    assert b.latency_ms == 0.0
+    assert a.latency_ms - b.latency_ms <= 155.0 + 2 * MAX_DRIFT_MS + 1e-6  # was +1130 ms after an hour
+    assert eng.lead_ms >= eng.required_lead_ms()

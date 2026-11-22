@@ -12,6 +12,10 @@ from .timeline import Timeline
 
 MIN_LEAD_MS = 120
 MAX_LEAD_MS = 2000
+# Bluetooth latency does not drift forever: the speaker/driver re-centres its buffer. The fitted
+# slope is only valid for a while, so each output's applied drift is capped at this many ms.
+MAX_DRIFT_MS = 60.0
+LEAD_MARGIN_MS = 60.0
 
 
 class Engine:
@@ -37,6 +41,7 @@ class Engine:
         self.outputs = {}  # id -> LocalOutput
         self.lock = threading.RLock()
         self.server = HubServer(self, self.port)
+        self._addr = None  # (monotonic time, ip) cache for hub_address()
 
     # ---------- lifecycle ----------
     def start(self):
@@ -59,12 +64,16 @@ class Engine:
             if self.drift_paused:
                 continue
             self.apply_drift(dt)
+            self.ensure_lead()
 
     def apply_drift(self, dt):
         group = [o for o in self.all_outputs() if o.cal_group]
         for o in group:
             if o.drift_ms_s:
-                o.latency_ms += o.drift_ms_s * dt
+                acc = getattr(o, "drift_acc_ms", 0.0)
+                new = max(-MAX_DRIFT_MS, min(MAX_DRIFT_MS, acc + o.drift_ms_s * dt))
+                o.latency_ms += new - acc
+                o.drift_acc_ms = new
         if len(group) >= 2:
             m = min(o.latency_ms for o in group)
             if m != 0.0:
@@ -101,7 +110,7 @@ class Engine:
         if not o.id:
             return
         s = self.config.output(o.id)
-        s.update(latency_ms=round(o.latency_ms, 2), volume=round(o.volume, 3), muted=o.muted,
+        s.update(latency_ms=round(o.latency_ms - getattr(o, "drift_acc_ms", 0.0), 2), volume=round(o.volume, 3), muted=o.muted,
                  drift_ms_s=o.drift_ms_s, cal_group=o.cal_group)
         if o.kind == "local":
             s["enabled"] = o.enabled
@@ -184,8 +193,21 @@ class Engine:
         self.source.resync()
 
     def required_lead_ms(self):
-        worst = max([o.latency_ms for o in self.all_outputs()] + [0.0])
-        return worst + 100.0
+        """Lead needed so every output's compensated read position is already written."""
+        worst = 0.0
+        for o in self.all_outputs():
+            if o.kind == "local" and not o.enabled:
+                continue
+            extra = o.output_delay_ms() if hasattr(o, "output_delay_ms") else 0.0
+            worst = max(worst, o.latency_ms + extra)
+        return worst + LEAD_MARGIN_MS
+
+    def ensure_lead(self):
+        """Raise the lead if a speaker's delay outgrew it; otherwise that speaker reads past the
+        newest audio and goes silent."""
+        need = self.required_lead_ms()
+        if self.lead_ms < need and self.lead_ms < MAX_LEAD_MS:
+            self.set_lead(need + 40.0)  # headroom so small changes don't resync again
 
     def start_sync_test(self):
         self.set_source(ClickSource(self, period_s=1.0))
@@ -193,4 +215,7 @@ class Engine:
     def hub_address(self):
         from .network import local_ips
 
-        return local_ips()[0], self.port
+        now = time.monotonic()
+        if self._addr is None or now - self._addr[0] > 5.0:
+            self._addr = (now, local_ips()[0])
+        return self._addr[1], self.port

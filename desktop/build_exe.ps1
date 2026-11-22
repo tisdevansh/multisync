@@ -19,6 +19,8 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed `
     --collect-binaries soundfile `
     --hidden-import soundcard.mediafoundation `
     --collect-data soundcard `
+    --hidden-import pycaw.pycaw `
+    --hidden-import comtypes.stream `
     --noupx `
     main.py
 

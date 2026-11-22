@@ -1,0 +1,122 @@
+{
+  "desktop/build_exe.ps1": {
+    "mtime": 1795358042.1261382,
+    "seen": 1795358093.7346573,
+    "ast_hash": "8e909f28453e808a80ec0a2c7cef4264",
+    "semantic_hash": ""
+  },
+  "desktop/main.py": {
+    "mtime": 1795351277.8490453,
+    "seen": 1795358093.7346706,
+    "ast_hash": "9b1404f68d94f1196356c920e98e49d6",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/__init__.py": {
+    "mtime": 1795351277.949858,
+    "seen": 1795358093.7346776,
+    "ast_hash": "1fcb65a7288390fda9a4f005a1ed9af8",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/app.py": {
+    "mtime": 1795357958.0068123,
+    "seen": 1795358093.7346838,
+    "ast_hash": "728d16da64ef9467991770aec5ae05db",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/calibrate.py": {
+    "mtime": 1795357919.6478908,
+    "seen": 1795358093.7346892,
+    "ast_hash": "a6a68cc74ec56a6ac3a6369163e4baa0",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/config.py": {
+    "mtime": 1795351105.339044,
+    "seen": 1795358093.7346947,
+    "ast_hash": "683b9e4caa5d9e2944b0cb7aeacd14ca",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/engine.py": {
+    "mtime": 1795357949.0698836,
+    "seen": 1795358093.7347004,
+    "ast_hash": "14c8d8a4f0f92650674c237bad337521",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/network.py": {
+    "mtime": 1795353270.8457,
+    "seen": 1795358093.734706,
+    "ast_hash": "49808cb6249b6ea4a4d51ca5bdd8c58b",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/outputs.py": {
+    "mtime": 1795358030.86806,
+    "seen": 1795358093.7347114,
+    "ast_hash": "398f826a2aaaf3f676de13cb0ac3248d",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/protocol.py": {
+    "mtime": 1795350930.196107,
+    "seen": 1795358093.7347167,
+    "ast_hash": "42255acb6d8e25ced1aa733db48c1096",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/realtime.py": {
+    "mtime": 1795358042.0572312,
+    "seen": 1795358093.734722,
+    "ast_hash": "b76a99105e710d4fc82db875732994e2",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/sources.py": {
+    "mtime": 1795357949.050886,
+    "seen": 1795358093.7347271,
+    "ast_hash": "5182a31b91977c6b7b3101c08739a692",
+    "semantic_hash": ""
+  },
+  "desktop/multisync/timeline.py": {
+    "mtime": 1795350956.1819565,
+    "seen": 1795358093.7347324,
+    "ast_hash": "661236cf086ce14eae9bb4b3970c79a2",
+    "semantic_hash": ""
+  },
+  "desktop/tests/test_core.py": {
+    "mtime": 1795357980.493613,
+    "seen": 1795358093.7347372,
+    "ast_hash": "7437a16ac83bf2382e8f1de852ad45c1",
+    "semantic_hash": ""
+  },
+  "desktop/tests/test_integration.py": {
+    "mtime": 1795351338.0300612,
+    "seen": 1795358093.7347422,
+    "ast_hash": "d4d84cb0b3c0daf6001abff5af2d23b3",
+    "semantic_hash": ""
+  },
+  "desktop/tools/make_icon.py": {
+    "mtime": 1795353602.2650745,
+    "seen": 1795358093.7347472,
+    "ast_hash": "b35133c7990f382187b97df69b7319d6",
+    "semantic_hash": ""
+  },
+  "desktop/tools/test_client.py": {
+    "mtime": 1795354766.7515454,
+    "seen": 1795358093.7347522,
+    "ast_hash": "eacadd60c9018382cf05b0d0293a5260",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1795355316.3990004,
+    "seen": 1795358093.7347572,
+    "ast_hash": "137e79d0a778bf98f0bf63f4ec35c8b4",
+    "semantic_hash": ""
+  },
+  "desktop/requirements.txt": {
+    "mtime": 1795358030.9461253,
+    "seen": 1795358093.734762,
+    "ast_hash": "30563cdce9fa594b2f31850e24fe1747",
+    "semantic_hash": ""
+  },
+  "desktop/version_info.txt": {
+    "mtime": 1795353602.3642724,
+    "seen": 1795358093.7347672,
+    "ast_hash": "c14b9ea12edeb4c6ae0d1164976dae17",
+    "semantic_hash": ""
+  }
+}
